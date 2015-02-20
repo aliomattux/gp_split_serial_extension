@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="report_picking_list_out_sn" model="stock.picking.out"
+                name="stock.picking.serial.list.out" string="Delivery Slip Serial Numbers"
+                rml="gp_split_serial_fix/report/picking.rml"/>
+
+        <report id="report_picking_list_in_sn" model="stock.picking.in" 
+                name="stock.picking.serial.list.in" string="Receipt Slip Serial Numbers" 
+                rml="gp_split_serial_fix/report/picking.rml"/>
+
+
+       <report id="stock.report_picking_list_in" model="stock.picking.in" name="stock.picking.list.in" string="Receipt Slip" rml="stock/report/picking.rml"/>
+       <report id="stock.report_picking_list_out" model="stock.picking.out" name="stock.picking.list.out" string="Delivery Slip" rml="stock/report/picking.rml"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+<t t-name="OnetouchscanItem">
+    <li class="oe_sidebar_add_one_touch_scan">
+        <span><b>One Touch Scan...</b></span>
+    </li>
+</t>
+</templates>

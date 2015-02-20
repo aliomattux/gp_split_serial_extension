@@ -1,0 +1,89 @@
+/**
+ * jQuery Lined Textarea Plugin
+ *   http://alan.blog-city.com/jquerylinedtextarea.htm
+ *
+ * Copyright (c) 2010 Alan Williamson
+ *
+ * Released under the MIT License:
+ * http://www.opensource.org/licenses/mit-license.php
+ * 
+ * Usage:
+ *   Displays a line number count column to the left of the textarea
+ *   
+ *   Class up your textarea with a given class, or target it directly
+ *   with JQuery Selectors
+ *   
+ *   $(".lined").linedtextarea({
+ *   	selectedLine: 10,
+ *    selectedClass: 'lineselect'
+ *   });
+ *
+ */
+/*
+.linedwrap {
+	border: 1px solid #c0c0c0;  !important;
+	padding: 3px; !important;
+}
+
+.linedtextarea {
+	padding: 0px; !important;
+	margin: 0px; !important;
+}
+
+.linedtextarea textarea, .linedwrap .codelines .lineno {
+	font-size: 1em; !important;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; !important;
+	line-height: normal !important;
+	text-align : right;
+}
+
+.linedtextarea textarea {
+	padding-right:0.3em; !important;
+	padding-top:0.3em; !important;
+	border: 0; !important;
+}
+
+.linedwrap .lines {
+	margin-top: 0px; !important;
+	width: 50px; !important;
+	float: left; !important;
+	overflow: hidden; !important;
+	border-right: 1px solid #c0c0c0; !important;
+	margin-right: 10px; !important;
+}
+
+.linedwrap .codelines {
+	padding-top: 5px; !important;
+}
+
+.linedwrap .codelines .lineno {
+	color:#AAAAAA; !important;
+	padding-right: 0.5em; !important;
+	padding-top: 0.0em; !important;
+	text-align: right; !important;
+	white-space: nowrap; !important;
+}
+
+.linedwrap .codelines .lineselect {
+	color: red; !important;
+} */
+
+
+/* html {font:normal 76% verdana, arial, san serif;}
+body {padding:2em;}
+h2 {font-size:1.8em; padding:0.5em; background:#44aaff;} */
+textarea {font-size:100%;}
+#editContent{
+	margin-left:30px;
+    padding-left:3px;
+    width:600px;
+    height:200px;
+    border:1px solid #666;
+}
+.textAreaWithLines{
+	display:block;
+    margin:0;
+    border:1px solid #666;
+    border-right:none;
+    background:#aaa;
+}

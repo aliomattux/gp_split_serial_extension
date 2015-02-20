@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_rapid_scan,access_stock_rapid_scan,model_stock_rapid_scan,,1,1,1,1
+access_item_serial,access_item_serial,model_item_serial,,1,1,1,1
+access_stock_item_serial,access_stock_item_serial,model_stock_item_serial,,1,1,1,1
+access_stock_item_pack,access_stock_item_pack,model_stock_item_pack,,1,1,1,1
+access_serial_move,access_serial_move,model_serial_move,,1,0,0,0
+access_product_pack_number_wizard,access_product_pack_number_wizard,model_product_pack_number_wizard,,1,1,1,1
+access_product_pack_search_wizard,access_product_pack_search_wizard,model_product_pack_search_wizard,,1,1,1,1
+access_product_serial_number_wizard,access_product_serial_number_wizard,model_product_serial_number_wizard,,1,1,1,1
+,,,,1,1,1,1
