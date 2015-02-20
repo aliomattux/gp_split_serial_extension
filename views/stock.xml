@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-     <data>
-     
-
-
+    <data>
 		<!--  Searches -->
         <record id="view_serial_move_search" model="ir.ui.view">
             <field name="name">serial.move.search</field>
@@ -11,11 +8,10 @@
             <field eval="3" name="priority"/>
             <field name="arch" type="xml">
                 <search string="Serial Moves">
-                	<field name="serial_number" filter_domain="[('serial_number','ilike',self)]" />
+                    <field name="serial_number" filter_domain="[('serial_number','ilike',self)]" />
                 	<field name="pack_id" />
                     <field name="origin" filter_domain="['|',('origin','ilike',self),('picking_id','ilike',self)]" string="Reference"/>
                     <field name="date" />
-
                     <filter icon="terp-camera_test" string="Ready" name="ready" domain="[('state','=','assigned')]" help="Stock moves that are Available (Ready to process)"/>
                     <filter icon="terp-stock" string="To Do" name="future" domain="[('state','in',('assigned','confirmed','waiting'))]" help="Stock moves that are Confirmed, Available or Waiting"/>
                     <filter icon="terp-dialog-close" string="Done" name="done" domain="[('state','=','done')]" help="Stock moves that have been processed"/>
@@ -40,19 +36,17 @@
             </field>
         </record>
 
-
 		<!--  Views -->
  		<record model="ir.ui.view" id="view_stock_rapid_scan">
 	    	<field name="name">stock.rapid.scan</field>
    	 		<field name="model">stock.rapid.scan</field>
     		<field name="arch" type="xml">
-				<form string="Rapid Serial Scan" version="7.0">
-            
+				<form string="Rapid Serial Scan">
 					<group>
 						<field name="lot_id" string="Receivable System Item ID:" />
 						<field name="prod_name"  />
 						<field name="qty" />
-						<field name="picking_type"  string="Picking Type" invisible="0"  /> 						
+						<field name="picking_type"  string="Picking Type" invisible="0"  />
 					</group>
 					<group>
 						<button name="import_serial_split" string="Save" type="object" context="{'scanned_numbers': scanned_numbers, 'qty':qty,'check_duplicates':check_duplicates, 'qty_per_barcode':qty_per_barcode}" /><button name="clear_list" string="Clear / Start over" type="object"  />
@@ -61,13 +55,12 @@
 						<field name="scanned_numbers" onchange="update_qty" />
 					</group>
 					<group>
-						<field name="use_exist" />						
+						<field name="use_exist" />
 						<field name="qty_per_barcode" />
-						<field name="check_duplicates" />							
+						<field name="check_duplicates" />
 					</group>
 					<br/>
-
-					    <script>
+                    <script>
 							$(document).ready(function(){
 				           		//setTimeout("$(function() {$('.lined').linedtextarea({selectedLine: 1});});",700);
 				           		
@@ -79,7 +72,7 @@
 				           								
 								setTimeout( "createTextAreaWithLines('scanned_numbers');",700 );
 							});
-                        </script>
+                    </script>
 					<footer>
 				    	<button name="import_serial_split" string="Save" type="object" context="{'scanned_numbers': scanned_numbers, 'qty':qty,'check_duplicates':check_duplicates, 'qty_per_barcode':qty_per_barcode}"/>
 				    	<button name="clear_list" string="Clear / Start over" type="object"  />
@@ -93,11 +86,11 @@
             <field name="model">serial.move</field>
             <field eval="8" name="priority"/>
             <field name="arch" type="xml">
-                 <tree colors="grey:state == 'cancel';red:(scrapped)" string="Moves">
-                 	<field name="serial_number"/>
-					<field name="pack_id"/>                 	
-                    <field name="product_id" on_change="onchange_product_id(product_id,location_id,location_dest_id, False)"/>                 	
-                    <field name="name"/>                    
+                <tree colors="grey:state == 'cancel';red:(scrapped)" string="Moves">
+                    <field name="serial_number"/>
+					<field name="pack_id"/>
+                    <field name="product_id" on_change="onchange_product_id(product_id,location_id,location_dest_id, False)"/>
+                    <field name="name"/>
                     <field name="picking_id" string="Reference"/>
                     <field name="origin"/>
                     <field name="picking_type_id"/>
@@ -109,13 +102,13 @@
                     <field name="scrapped"/>
                     <field name="date" groups="base.group_no_one"/>
                     <field name="date_expected"/>
-                    <field name="state"/>                   
-                </tree>  
+                    <field name="state"/>
+                </tree>
             </field>
-        </record>			
+        </record>
 
      <!--  Actions -->
-       <record id="barcode_scan_serial_numbers_popup" model="ir.actions.act_window">
+        <record id="barcode_scan_serial_numbers_popup" model="ir.actions.act_window">
             <field name="name">Barcode Scanner</field>
             <field name="res_model">stock.rapid.scan</field>
             <field name="view_type">form</field>
@@ -125,8 +118,6 @@
             <field name="target">new</field>
         </record>
 
-        
-   
         <record id="action_serial_move_tree_all" model="ir.actions.act_window">
             <field name="name">Serial Number Tracking</field>
             <field name="res_model">serial.move</field>
@@ -135,34 +126,14 @@
             <field name="view_id" ref="view_serial_move_tree"/>
             <field name="search_view_id" ref="view_serial_move_search"/>
             <field name="context">{}</field>
-        </record>            
+        </record>
 
-        
         <!-- Menus -->
         <menuitem name="Serial Number Tracking"
-            id="menu_serial_move_tree"     
-            action="action_serial_move_tree_all"    
-            parent="stock.menu_traceability"   
-            sequence="10" groups="base.group_no_one" />  
-        
-        
-        <!--
- 		<record model="ir.ui.view" id="view_stock_split_form">
-	    	<field name="name">stock.move.split.inherit</field>
-   	 		<field name="model">stock.move.split</field>
-    		<field name="inherit_id" ref="stock.view_split_in_lots"/>
-    		<field name="arch" type="xml">
-				<data>
-					<field name="line_exist_ids" position="after">
-						<button name="%(barcode_scan_serial_numbers_popup)d" string="Barcode Scanner"  type="action" context="{'lot_id_passed':lot_id_passed}"   />
-						<field name="lot_id_passed" string="Receivable System Item ID:"  invisible="1"  /> 
-					</field>
-				</data>				
-    		</field>
-		</record>
+            id="menu_serial_move_tree"
+            action="action_serial_move_tree_all"
+            parent="stock.menu_traceability"
+            sequence="10" groups="base.group_no_one" />
 
--->
-	
-	
     </data>
 </openerp>

@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
      <data>
-
-	<!-- Sequence(s) --> 
- 	<record forcecreate="1" model="ir.sequence.type" id="pack_sequence_type">
-    	    <field name="name">Pack</field>
+        <!-- Sequence(s) -->
+        <record forcecreate="1" model="ir.sequence.type" id="pack_sequence_type">
+            <field name="name">Pack</field>
     	    <field name="code">product.pack.number.wizard</field>
-   	</record>
-   	<record forcecreate="1" model="ir.sequence" id="pack_sequence">
+        </record>
+        <record forcecreate="1" model="ir.sequence" id="pack_sequence">
     	    <field name="name">Pack Number</field>
     	    <field name="code">product.pack.number.wizard</field>
       	    <field name="padding">12</field>
-   	</record>      
-
+        </record>      
 
         <record model="ir.ui.view" id="pack_search_wizard_view">
             <field name="name">Pack Search</field>
             <field name="model">product.pack.search.wizard</field>
             <field name="arch" type="xml">
                 <form string="Lot Search">
-<xpath expr="." position="inside">
-<script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
-</xpath>
-                <group>                
-					<group>
-						<field name="instructions" />						
-					</group>
-					<group>
-						<field name="pack_id" options="{'no_open': True,'limit': 10, 'create': false, 'create_edit': false}" readonly="0" onchange="search_and_load_pack(ids,context)"/>
-						<field name="item_serial_number" options="{'no_open': True,'limit': 10, 'create': false, 'create_edit': false}" readonly="0" onchange="search_and_load_pack_by_serial(ids,context)"/>
-						<button name="search_and_load_pack" string="Search" type="object" icon="STOCK_FIND" />									
-					</group>					
-					<group colspan="2">		
-						<!--  <field name="pack_name" /> -->				
-						<field name="scanned_numbers" />
-					</group>	
-								
+                    <xpath expr="." position="inside">
+                        <script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
+                    </xpath>
+                    <group>
+                        <group>
+                            <field name="instructions" />
+                        </group>
+                        <group>
+                            <field name="pack_id" options="{'no_open': True,'limit': 10, 'create': false, 'create_edit': false}" readonly="0" onchange="search_and_load_pack(ids,context)"/>
+                            <field name="item_serial_number" options="{'no_open': True,'limit': 10, 'create': false, 'create_edit': false}" readonly="0" onchange="search_and_load_pack_by_serial(ids,context)"/>
+                            <button name="search_and_load_pack" string="Search" type="object" icon="STOCK_FIND" />
+                        </group>
+                        <group colspan="2">
+                            <field name="scanned_numbers" />
+                        </group>
 					    <script>
 							$(document).ready(function(){
 				           		//setTimeout("$(function() {$('.lined').linedtextarea({selectedLine: 1});});",700);
@@ -48,51 +44,43 @@
 				           								
 								setTimeout( "CreateTextAreaWithDupAlert('scanned_numbers');",700 );
 							});
-                        </script>	
-	                        				                  
-                    <footer>
-                    	<button name="search_and_add_pack" string="Save" type="object" icon="STOCK_APPLY"/>
-                    	<button name="cancel_pack_search_wizard" string="Cancel" type="object" icon="gtk-stop"/>
-                    </footer>
-                </group> 
+                        </script>
+                        <footer>
+                    	   <button name="search_and_add_pack" string="Save" type="object" icon="STOCK_APPLY"/>
+                    	   <button name="cancel_pack_search_wizard" string="Cancel" type="object" icon="gtk-stop"/>
+                        </footer>
+                    </group>
                 </form>
             </field>
-        </record>		
+        </record>
         
-
-
         <record model="ir.ui.view" id="product_serial_number_wizard_view">
             <field name="name">Product Serial Number Wizard View</field>
             <field name="model">product.serial.number.wizard</field>
             <field name="arch" type="xml">
                 <form string="Rapid Serial Scan">
-<xpath expr="." position="inside">
-<script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
-</xpath>
-                <group width="900" height="275">
-                     <group>
-                        <field name="product_id" readonly="1"/>
-                        <field name="move_id" readonly="1"/>
-                        <field name="picking_type_id"  invisible="0" readonly="1"  />        
-                        <field name="mfg_product_code" /> 
-                    </group>
-                    <group>	                    					
-						<field name="qty" />
-						<field name="force_qty"  confirm="Are you sure you want to force incorrect qunatity?  This will affect tracking!" />
-						<field name="use_exist" />	
-						<field name="check_duplicates" />	
-						<field name="initial_created" invisible="1" readonly="1" />
-						                           
-												
-					</group>                      
-					<group colspan="2">
-						
-						<field name="scanned_numbers" onchange="update_qty" />
-					</group>	
-									
-					<br/>
-
-					    <script>
+                    <xpath expr="." position="inside">
+                        <script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
+                    </xpath>
+                    <group width="900" height="275">
+                        <group>
+                            <field name="product_id" readonly="1"/>
+                            <field name="move_id" readonly="1"/>
+                            <field name="picking_type_id"  invisible="0" readonly="1"  />
+                            <field name="mfg_product_code" />
+                        </group>
+                        <group>
+                            <field name="qty" />
+                            <field name="force_qty"  confirm="Are you sure you want to force incorrect qunatity?  This will affect tracking!" />
+                            <field name="use_exist" />
+                            <field name="check_duplicates" />
+                            <field name="initial_created" invisible="1" readonly="1" />
+                        </group>
+                        <group colspan="2">
+                            <field name="scanned_numbers" onchange="update_qty" />
+                        </group>
+                        <br/>
+                        <script>
 							$(document).ready(function(){
 				           		//setTimeout("$(function() {$('.lined').linedtextarea({selectedLine: 1});});",5000);
 				           		
@@ -105,71 +93,51 @@
 								setTimeout( "CreateTextAreaWithDupAlert('scanned_numbers');",5000 );
 							});
                         </script>
-				
-					                    
-             <!--       <group colspan="4">
-                        <field name="line_ids" widget="one2many_list" nolabel="1">
-                            <tree string="Serial Numbers" editable="bottom">
-                                <field name="name" string="Serial Number"/>
-                            </tree>
-                        </field>
-                    </group>  -->
-
-                  
-                    <footer>
-                    		<button name="redo_serial_number_wizard" string="Save" type="object" icon="STOCK_APPLY"/>
-                    		<button string="Cancel" special="cancel" confirm="Are you sure you cancel?  All Entries will not be saved if you continue!" icon="gtk-stop"/>
-                    		<!-- <button name="redo_serial_number_wizard" string="Redo" type="object" confirm="Are you sure you want to redo?  This is for scan mistakes on incoming shipment scans and will clear all of the sanned serial numbers." attrs="{'invisible': [('initial_created', '=', False)]}" icon="gtk-ok"/>-->
-                    		
-                    		<button name="add_a_pack"
-                                string="Add New Pack" type="object"
-                                icon="STOCK_GOTO_BOTTOM"
-                             /> 
-                             <button name="search_pack" string="Search And Add Pack To List" type="object" icon="STOCK_FIND" attrs="{'invisible': [('picking_type_id', '=', 1)]}" />
-
-                    </footer>
-                </group> 
+                        <footer>
+                            <button name="redo_serial_number_wizard" string="Save" type="object" icon="STOCK_APPLY"/>
+                            <button string="Cancel" special="cancel" confirm="Are you sure you cancel?  All Entries will not be saved if you continue!" icon="gtk-stop"/>
+                            <button name="add_a_pack" string="Add New Pack" type="object" icon="STOCK_GOTO_BOTTOM" />
+                            <button name="search_pack" string="Search And Add Pack To List" type="object" icon="STOCK_FIND" attrs="{'invisible': [('picking_type_id', '=', 1)]}" />
+                        </footer>
+                    </group>
                 </form>
             </field>
         </record>
 
-<record id="action_product_serial_number_wizard" model="ir.actions.act_window">
+        <record id="action_product_serial_number_wizard" model="ir.actions.act_window">
             <field name="name">Serial Numbers</field>
             <field name="res_model">product.serial.number.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
-           <field name="view_id" ref="product_serial_number_wizard_view"/>
-           <field name="target">new</field>
-</record>
+            <field name="view_id" ref="product_serial_number_wizard_view"/>
+            <field name="target">new</field>
+        </record>
 
         <record model="ir.ui.view" id="product_pack_number_wizard_view">
             <field name="name">Product Pack Number Wizard View</field>
             <field name="model">product.pack.number.wizard</field>
             <field name="arch" type="xml">
                 <form string="Rapid Serial Scan" onload="form_load(move_id)" setup="form_load(move_id)">
-<xpath expr="." position="inside">
-<script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
-</xpath>
-                <group width="900" height="275">
-							               
-                     <group colspan="2">      
-                        <field name="pack_name"/>
-                    </group>
-                    
-					<group>
-						<field name="scanned_numbers" onchange="update_qty" />
-					</group>	 		
-					<group>                    
-							<field name="use_exist" />						
-							<field name="check_duplicates" />	                    
+                    <xpath expr="." position="inside">
+                        <script type="text/javascript" src="/gp_split_serial_extension/static/src/js/jquery-linedtextarea.js"></script>
+                    </xpath>
+                    <group width="900" height="275">
+                        <group colspan="2">
+                            <field name="pack_name"/>
+                        </group>
+                        <group>
+                            <field name="scanned_numbers" onchange="update_qty" />
+                        </group>	 		
+                        <group>
+                            <field name="use_exist" />
+                            <field name="check_duplicates" />
                             <field name="scanned_range_start" />
-							<field name="scanned_range_end" />
-							<field name="qty" />
-                    		<button name="auto_fill_serial_range" string="Auto Fill Serial Range" help="Automatically fill serial numbers based either 'Rage Serial Start' and 'Rage Serial End'.  If finish range is empty, then it will fill by 'Rage Serial Start' and Scanned Range QTY" type="object"/>							
-					</group>
-					<br/>
-
-					    <script>
+                            <field name="scanned_range_end" />
+                            <field name="qty" />
+                            <button name="auto_fill_serial_range" string="Auto Fill Serial Range" help="Automatically fill serial numbers based either 'Rage Serial Start' and 'Rage Serial End'.  If finish range is empty, then it will fill by 'Rage Serial Start' and Scanned Range QTY" type="object"/>
+                        </group>
+                        <br/>
+                        <script>
 							$(document).ready(function(){
 				           		//setTimeout("$(function() {$('.lined').linedtextarea({selectedLine: 1});});",700);
 				           		
@@ -182,25 +150,18 @@
 								setTimeout( "CreateTextAreaWithDupAlert('scanned_numbers');",700 );
 							});
                         </script>
-				
-					                    
-
-  
-                  
-                    <footer>
-                    	<button name="save_pack_number_wizard" string="Save" type="object" icon="STOCK_APPLY"/>
-                    	<button name="cancel_pack_number_wizard" string="Cancel" type="object" confirm="Are you sure you cancel?  All Entries will not be saved if you continue!" icon="gtk-stop"/>                    		
-                    </footer>
-				  </group>
+                        <footer>
+                    	   <button name="save_pack_number_wizard" string="Save" type="object" icon="STOCK_APPLY"/>
+                    	   <button name="cancel_pack_number_wizard" string="Cancel" type="object" confirm="Are you sure you cancel?  All Entries will not be saved if you continue!" icon="gtk-stop"/>
+                        </footer>
+                    </group>
                 </form>
             </field>
-        </record>        
-            
-		
+        </record>
 	<!--  Inherited -->
-		
+
 	<!-- Attached serial number list  -->
-     <record model="ir.ui.view" id="stock.view_stock_move_serial_number">
+        <record model="ir.ui.view" id="stock.view_stock_move_serial_number">
             <field name="name">serial.stock.move.tree.inherit</field>
             <field name="model">stock.move</field>
             <field name="type">tree</field>
@@ -219,7 +180,6 @@
             </field>
         </record>
 
-
  		<record model="ir.ui.view" id="view_stock_move_scrap_form">
 	    	<field name="name">stock.move.scrap.inherit</field>
    	 		<field name="model">stock.move.scrap</field>
@@ -229,10 +189,8 @@
 					<field name="product_qty" position="after">
 						<button name="%(action_product_serial_number_wizard)d" icon="gtk-justify-fill" string="Serial Numbers Scrap List"  type="action" context="{'product_id':product_id, 'scrap':scrap}"  /> 
 					</field>
-				</data>				
+				</data>
     		</field>
 		</record>
-
-	
     </data>
 </openerp>

@@ -20,77 +20,63 @@ class StockMove(osv.osv):
     _columns = {
         'prod_lot_id': fields.many2one('stock.production.lot', 'Serial Number', domain="[('product_id','=',product_id)]"),
     }
-
-
-class stock_move_serial(osv.osv):
-    _name="stock.move"
-    _inherit="stock.move"
     
     def action_scrap(self, cr, uid, ids, quantity, location_id, restrict_lot_id=False, restrict_partner_id=False, context=None):
-	res = super(stock_move_serial, self).action_scrap(cr, uid, ids, quantity, locaton_id, restrict_lot_id, restrict_partner_id, context)
+        res = super(StockMove, self).action_scrap(cr, uid, ids, quantity, locaton_id, restrict_lot_id, restrict_partner_id, context)
 
         # Get Serial Numbers
         stock_item_serial = self.pool.get('stock.item.serial')
         stock_item_serial_ids = stock_item_serial.search(cr, uid, [('move_id','=', context.get('active_id')), ('scrapped','=',context.get('scrap'))])
-        stock_picking_serial = self.pool.get('stock.picking')  
-        stock_picking_serial.serial_move_history(cr, SUPERUSER_ID, ids, stock_item_serial_ids, context) 
+        picking_obj = self.pool.get('stock.picking')
+        picking_obj.serial_move_history(cr, SUPERUSER_ID, ids, stock_item_serial_ids, context)
 
-	return res
+        return res
 
  
-class stock_move_scrap_serial(osv.osv_memory):
+class StockMoveScrap(osv.osv_memory):
     _inherit = "stock.move.scrap"
-    #_description = "Scrap Products"
-    #_inherit = "stock.move.consume"
 
-    
     def default_get(self, cr, uid, fields, context=None):
-        res = super(stock_move_scrap_serial, self).default_get(cr, uid, fields, context)
-        if context.get('scrapped_product_qty'):       
+        res = super(StockMoveScrap, self).default_get(cr, uid, fields, context)
+        if context.get('scrapped_product_qty'):
             res.update({'product_qty': context.get('scrapped_product_qty')})
         return res
-        
-        
+
 
     def action_product_serial_number(self, cr, uid, ids, context={}):
-                       
-        context['parent_init_ids'] = ids                       
-        for msnw in self.browse(cr, uid, ids): 
+        context['parent_init_ids'] = ids
+        for msnw in self.browse(cr, uid, ids):
             context['scrapped_product_qty'] = msnw.product_qty
-                               
-                               
+
         return {
-        'name':("Serial Numbers"),
-        'view_mode': 'form',
-        'view_id': False,
-        'view_type': 'form',
-        'res_model': 'product.serial.number.wizard',
-        'type': 'ir.actions.act_window',
-        'nodestroy': False,
-        'target': 'new',
-        'domain': '[]',
-        'context': context,                
-                                        
+            'name':("Serial Numbers"),
+            'view_mode': 'form',
+            'view_id': False,
+            'view_type': 'form',
+            'res_model': 'product.serial.number.wizard',
+            'type': 'ir.actions.act_window',
+            'nodestroy': False,
+            'target': 'new',
+            'domain': '[]',
+            'context': context,                               
         } 
 
 
-class stock_picking_serial(osv.osv):
+class StockPicking(osv.osv):
     _inherit  = "stock.picking"
-#---------------------------------------------------------
-#  General Procurement / Kranbery - convert to inheritance version
-#---------------------------------------------------------
+
     @api.cr_uid_ids_context
     def do_transfer(self, cr, uid, picking_ids, context=None):
-	print 'CALL'
-        res = super(stock_picking_serial, self).do_transfer(cr, uid, picking_ids, context=context)
+        res = super(StockPicking, self).do_transfer(cr, uid, picking_ids, context=context)
         picking_obj = self.pool.get('stock.picking')
-	for picking in picking_obj.browse(cr, uid, picking_ids):
-	    if picking.state == 'done':
-		for move in picking.move_lines:
-		    if move.state == 'done':
-			self.serial_move_history(cr, SUPERUSER_ID, picking_ids, move, context)
 
-         
+        for picking in picking_obj.browse(cr, uid, picking_ids):
+            if picking.state == 'done':
+                for move in picking.move_lines:
+                    if move.state == 'done':
+                        self.serial_move_history(cr, SUPERUSER_ID, picking_ids, move, context)
+        return res
+
     # Stock split modified from warehouse stock split to work with parsed scanned text area
     def serial_move_history(self, cr, uid, ids, move_obj, context=None):
         if context is None:
@@ -98,75 +84,65 @@ class stock_picking_serial(osv.osv):
 
         # Get Serial Numbers
         stock_item_serial = self.pool.get('stock.item.serial')
-        
+
         # Handle scrapped situation
         scrapped = False
         if context.get('scrap'):
             scrapped = context.get('scrap')
         if scrapped:
             stock_item_serial_ids = move_obj
-        else:            
+        else:
             stock_item_serial_ids = stock_item_serial.search(cr, uid, [('move_id','=',move_obj.id)])
-            
-        #  Get associated serial numbers    
+
+        #  Get associated serial numbers
         serial_numbers = stock_item_serial.browse(cr, uid, stock_item_serial_ids)
 
-        
+
         # Process Serial Numbers and record history in serial move
         if serial_numbers:
-            
             # Get move data
             stock_move = self.pool.get('stock.move')
             move_obj = stock_move.browse(cr, uid, context.get('active_id'))   
-                        
+
             for serial_lines in serial_numbers:
-            
-
                 self.pool.get('serial.move').create_rapid_insert(cr, uid, {
-			'serial_number':serial_lines.name.id,
-			'move_id':move_obj.id,
-			'name':move_obj.name,
-			'pack_id':serial_lines.pack_id.strip(),
-			'mfg_product_code':serial_lines.mfg_product_code,
-			'priority':move_obj.priority,
-			'create_sn_date':move_obj.create_date,
-			'date': time.strftime('%Y-%m-%d %H:%M:%S'),
-			'date_expected':move_obj.date_expected,
-			'product_id':move_obj.product_id.id,
-			'product_qty':move_obj.product_qty,
-			'product_uom':move_obj.product_uom.id,
-			'product_uos_qty':move_obj.product_uos_qty,
-			'product_uos':move_obj.product_uos.id,
-			'product_packaging':move_obj.product_packaging.id,
-			'location_id':move_obj.location_id.id,
-			'location_dest_id':move_obj.location_dest_id.id,
-			'partner_id':move_obj.partner_id.id,
-			'prod_lot_id':move_obj.prod_lot_id.id,
-	#		'auto_validate':move_obj.auto_validate,
-			'move_dest_id':move_obj.move_dest_id.id,
-			'picking_id':move_obj.picking_id.id,
-			'note':move_obj.note,
-			'state':move_obj.state,
-			'price_unit':move_obj.price_unit,
-	#		'price_currency_id':move_obj.price_currency_id.id,
-			'company_id':move_obj.company_id.id,
-			'backorder_id':move_obj.backorder_id.id,
-			'origin':move_obj.origin,
-			'scrapped': scrapped,
-		#	'type':move_obj.type,
-			'picking_type_id': move_obj.picking_type_id.id,
+                                'serial_number':serial_lines.name.id,
+                                'move_id':move_obj.id,
+                                'name':move_obj.name,
+                                'pack_id':serial_lines.pack_id.strip(),
+                                'mfg_product_code':serial_lines.mfg_product_code,
+                                'priority':move_obj.priority,
+                                'create_sn_date':move_obj.create_date,
+                                'date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                                'date_expected':move_obj.date_expected,
+                                'product_id':move_obj.product_id.id,
+                                'product_qty':move_obj.product_qty,
+                                'product_uom':move_obj.product_uom.id,
+                                'product_uos_qty':move_obj.product_uos_qty,
+                                'product_uos':move_obj.product_uos.id,
+                                'product_packaging':move_obj.product_packaging.id,
+                                'location_id':move_obj.location_id.id,
+                                'location_dest_id':move_obj.location_dest_id.id,
+                                'partner_id':move_obj.partner_id.id,
+                                'prod_lot_id':move_obj.prod_lot_id.id,
+                                'move_dest_id':move_obj.move_dest_id.id,
+                                'picking_id':move_obj.picking_id.id,
+                                'note':move_obj.note,
+                                'state':move_obj.state,
+                                'price_unit':move_obj.price_unit,
+                                'company_id':move_obj.company_id.id,
+                                'backorder_id':move_obj.backorder_id.id,
+                                'origin':move_obj.origin,
+                                'scrapped': scrapped,
+                                'picking_type_id': move_obj.picking_type_id.id,
+                }, context=context)
 
-
-},
-        context=context)    
-        
         # remove from scrapped list
         if scrapped:
             stock_item_serial_ids = stock_item_serial.search(cr, uid, [('move_id','=',context.get('active_id')),('scrapped','=',scrapped)])
             stock_item_serial.unlink(cr, uid, stock_item_serial_ids, context=None)
-                                                
-        return True   
-      
+
+        return True
 
 
 class stock_item_serial(osv.Model):
@@ -205,7 +181,7 @@ class stock_item_serial(osv.Model):
 stock_item_serial()
 
 
-class stock_item_pack(osv.Model):
+class StockItemPack(osv.Model):
     """Packs Related to item"""
     _name = 'stock.item.pack'
     _rec_name = 'name'        
@@ -216,9 +192,6 @@ class stock_item_pack(osv.Model):
         for line in self.browse(cr, uid, ids, context=context):
             res.append((line.id, line.name))
         return res
-
-    #def create(self, cr, uid, vals, context=None):
-    #    return super(stock_item_serial, self).create(cr, uid, vals, context)
 
     _columns = {
         'date': fields.datetime('Creation Date'),
@@ -235,7 +208,7 @@ class stock_item_pack(osv.Model):
 
 
 
-class item_serial(osv.Model):
+class ItemSerial(osv.Model):
     """Item Serial Numbers Mass Table Storage - Records a list of all serial numbers created"""
     _name = 'item.serial'
     _description = 'Item Serial Number'
@@ -254,7 +227,7 @@ class item_serial(osv.Model):
     }  
 
 
-class serial_move(osv.osv):
+class SerialMove(osv.osv):
 
     """ serial move which is the stock move data but for non-dependent logging of serial number activity """
 
@@ -272,7 +245,6 @@ class serial_move(osv.osv):
         'date': fields.datetime('Date', required=True, select=True, help="Move date: scheduled date until move is done, then date of actual move processing", states={'done': [('readonly', True)]}),
         'date_expected': fields.datetime('Scheduled Date', states={'done': [('readonly', True)]},required=True, select=True, help="Scheduled date for the processing of this move"),
         'product_id': fields.many2one('product.product', 'Product', required=True, select=True, domain=[('type','<>','service')],states={'done': [('readonly', True)]}),
-
         'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),
             required=True,states={'done': [('readonly', True)]},
             help="This is the quantity of products from an inventory "
@@ -287,16 +259,10 @@ class serial_move(osv.osv):
         'product_uos_qty': fields.float('Quantity (UOS)', digits_compute=dp.get_precision('Product Unit of Measure'), states={'done': [('readonly', True)]}),
         'product_uos': fields.many2one('product.uom', 'Product UOS', states={'done': [('readonly', True)]}),
         'product_packaging': fields.many2one('product.packaging', 'Packaging', help="It specifies attributes of packaging like type, quantity of packaging,etc."),
-
         'location_id': fields.many2one('stock.location', 'Source Location', required=False, select=True,states={'done': [('readonly', True)]}, help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations."),
         'location_dest_id': fields.many2one('stock.location', 'Destination Location', required=False,states={'done': [('readonly', True)]}, select=True, help="Location where the system will stock the finished products."),
         'partner_id': fields.many2one('res.partner', 'Destination Address ', states={'done': [('readonly', True)]}, help="Optional address where goods are to be delivered, specifically used for allotment"),
-        
-        # Old Serial Number
         'prod_lot_id': fields.many2one('stock.production.lot', '', states={'done': [('readonly', True)]}, help="Serial number is used to put a serial number on the production", select=True),
-
-        'auto_validate': fields.boolean('Auto Validate'),
-
         'move_dest_id': fields.many2one('stock.move', 'Destination Move', help="Optional: next stock move when chaining them", select=True),
         'picking_id': fields.many2one('stock.picking', 'Reference', select=True,states={'done': [('readonly', True)]}),
         'note': fields.text('Notes'),
@@ -318,8 +284,7 @@ class serial_move(osv.osv):
         'scrapped': fields.boolean('Scrapped', readonly=True),
         'backorder_id': fields.related('picking_id','backorder_id',type='many2one', relation="stock.picking", string="Back Order of", select=True),
         'origin': fields.related('picking_id','origin',type='char', size=64, relation="stock.picking", string="Source", store=True),
-	'picking_type_id': fields.many2one('stock.picking.type', 'Picking Type'),
-     #   'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Shipping'), ('in', 'Receiving'), ('internal', 'Internal Move')], string='Shipping Type'),
+        'picking_type_id': fields.many2one('stock.picking.type', 'Picking Type'),
     }
 
 
@@ -402,12 +367,12 @@ class serial_move(osv.osv):
                 del vals[self._inherits[table]]
 
             record_id = tocreate[table].pop('id', None)
-            
+
             # When linking/creating parent records, force context without 'no_store_function' key that
             # defers stored functions computing, as these won't be computed in batch at the end of create(). 
             parent_context = dict(context)
             parent_context.pop('no_store_function', None)
-            
+
             if record_id is None or not record_id:
                 record_id = self.pool.get(table).create(cr, user, tocreate[table], context=parent_context)
             else:
@@ -485,31 +450,9 @@ class serial_move(osv.osv):
         
         
         return id_new
-    
-    
-    
-'''
-class stock_move_split(osv.osv):
-    """ stock move split enhanced """
 
-    _inherit = 'stock.move.split'
 
-    def default_get(self, cr, uid, fields, context=None):        
-        res = super(stock_move_split, self).default_get(cr, uid, fields, context=context)
-        if context.get('active_id'):
-            lot_id_passed = context.get('active_id')
-            picking_type_passed = context.get('picking_type')
-            if 'lot_id_passed' in fields:
-                res.update({'lot_id_passed': lot_id_passed}) #,'picking_type_passed':picking_type_passed
-        return res
-    # Column declarations
-    _columns = {
-        'lot_id_passed': fields.float('Receivable System Item ID', readonly=True, required=False, help='Text area for rapidly scanned serial numbers'),  
-    }
-    
-'''
-
-class stock_rapid_scan(osv.osv):
+class StockRapidScan(osv.osv):
     """ rapid scan text box """
     _name = 'stock.rapid.scan'
     

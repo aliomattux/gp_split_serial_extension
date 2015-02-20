@@ -140,6 +140,7 @@ class StockModel(osv.Model):
 
                 if not edit:
                     vals.pop(field)
+
         for field in vals:
             if self._columns[field]._classic_write:
                 upd0 = upd0 + ',"' + field + '"'
@@ -174,7 +175,3 @@ class StockModel(osv.Model):
         
         
         return id_new
-
-
-
-

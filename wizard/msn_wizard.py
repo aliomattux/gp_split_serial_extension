@@ -12,7 +12,7 @@ import time
 import re
 
 
-class product_pack_search_wizard(osv.osv):
+class ProductPackSearchWizard(osv.osv):
     _name = "product.pack.search.wizard"
     _description = "Product Pack Search and Add Wizard"
     
@@ -501,13 +501,11 @@ class product_serial_number_wizard(osv.osv_memory):
 'location_dest_id':move_obj.location_dest_id.id,
 'partner_id':move_obj.partner_id.id,
 'prod_lot_id':move_obj.prod_lot_id.id,
-#'auto_validate':move_obj.auto_validate,
 'move_dest_id':move_obj.move_dest_id.id,
 'picking_id':move_obj.picking_id.id,
 'note':move_obj.note,
 'state':move_obj.state,
 'price_unit':move_obj.price_unit,
-#'price_currency_id':move_obj.price_currency_id.id,
 'company_id':move_obj.company_id.id,
 'backorder_id':move_obj.backorder_id.id,
 'origin':move_obj.origin,
@@ -589,14 +587,7 @@ class product_serial_number_wizard(osv.osv_memory):
             context['base_serial_list'] = msnw.scanned_numbers
             context['parent_ids'] = ids
             
-            
-            
-        #self.redo_serial_number_wizard(cr, uid, ids, context)
-        
-        
-                  
 
-                       
         return {
         'name':("Add to Pack"),
         'view_mode': 'form',
@@ -610,7 +601,8 @@ class product_serial_number_wizard(osv.osv_memory):
         'context': context,                
                                         
         } 
-    
+
+
     def search_pack(self, cr, uid, ids, context={}):
         
         # turn off validation to temporarily save current serial list
@@ -639,7 +631,7 @@ class product_serial_number_wizard(osv.osv_memory):
 
 
 
-class product_pack_number_wizard(osv.osv):
+class ProductPackNumberWizard(osv.osv):
     _name = "product.pack.number.wizard"
     _description = "Product Pack Number Wizard"
 
@@ -891,7 +883,7 @@ class product_pack_number_wizard(osv.osv):
             }    
 
 
-class serial_number_wizard(osv.osv_memory):
+class SerialNumberWizard(osv.osv_memory):
     _name = "serial.number.wizard"
     _description = "Serial number"
 
